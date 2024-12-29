@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace VehicleManagerAPI.Models
 {
@@ -16,5 +17,8 @@ namespace VehicleManagerAPI.Models
         public DateTime? CreatedDate { get; set; }
         public string? LastUpdatedBy { get; set; }
         public DateTime? LastUpdatedDate { get; set; }
+
+        [JsonIgnore]
+        public ICollection<MessageModel>? Messages { get; set; }
     }
 }

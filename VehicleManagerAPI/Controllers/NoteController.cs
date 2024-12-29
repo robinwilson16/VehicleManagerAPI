@@ -89,7 +89,7 @@ namespace VehicleManagerAPI.Controllers
             if (existingRecord is null)
                 return NotFound();
 
-            await _noteService.Update(updatedNote);
+            await _noteService.Update(updatedNote, true);
 
             return AcceptedAtAction(nameof(Update), new { }, updatedNote);
         }

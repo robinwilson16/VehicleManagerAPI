@@ -8,11 +8,12 @@ namespace VehicleManagerAPI.Models
         [Key]
         public int MessageID { get; set; }
         public Guid? MessageGUID { get; set; }
-        public MessageType MessageTypeID { get; set; }
-        public virtual MessageTemplateModel? MessageTemplate { get; set; }
+        public MessageType? MessageTypeID { get; set; }
+        public MessageTemplateModel? MessageTemplate { get; set; }
         public string? Subject { get; set; }
         public string? Message { get; set; }
         public bool? MessageIsHTML { get; set; }
+        public int? VehicleID { get; set; }
         public virtual VehicleModel? Vehicle { get; set; }
 
         [Column(TypeName = "decimal(19,4)")]

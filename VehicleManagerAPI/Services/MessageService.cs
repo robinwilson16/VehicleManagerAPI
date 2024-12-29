@@ -1,6 +1,8 @@
 ﻿using VehicleManagerAPI.Data;
 using VehicleManagerAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
+using System.Runtime.Intrinsics.Arm;
 
 namespace VehicleManagerAPI.Services
 {
@@ -16,6 +18,7 @@ namespace VehicleManagerAPI.Services
             _context = context;
 
             Messages = _context.Message!
+                .Include(m => m.MessageTemplate)
                 .ToList();
         }
 
@@ -51,16 +54,38 @@ namespace VehicleManagerAPI.Services
             return new ModelResultModel() { IsSuccessful = true };
         }
 
-        public async Task<ModelResultModel> Update(MessageModel? updatedMessage)
+        public async Task<ModelResultModel> Update(MessageModel? updatedMessage, bool? save)
         {
-            MessageModel? recordToUpdate = _context.Message!
-                .FirstOrDefault(m => m.MessageID == updatedMessage!.MessageID);
+            //Include any related entities
+            MessageModel? recordToUpdate = await _context.Message!
+                .Include(m => m.MessageTemplate)
+                .FirstOrDefaultAsync(m => m.MessageID == updatedMessage!.MessageID);
 
-            if (_context.Message == null)
+            if (recordToUpdate == null)
                 return new ModelResultModel() { IsSuccessful = false };
 
+            //Update IDs on related entities
+            //Need to get full related entity as only the ID is set in the updated record so causes the rest of the fields to be wiped out
+            MessageTemplateModel? updatedMessageTemplate = new MessageTemplateModel();
+            if (updatedMessage?.MessageTemplate != null)
+            {
+                updatedMessageTemplate = await _context.MessageTemplate!
+                .FirstOrDefaultAsync(t => t.MessageTemplateID == updatedMessage!.MessageTemplate.MessageTemplateID);
+            }
+
             _context.Entry(recordToUpdate!).CurrentValues.SetValues(updatedMessage!);
-            await _context.SaveChangesAsync();
+
+            //Update content of related entities
+            if (updatedMessageTemplate?.MessageTemplateID != null)
+            {
+                recordToUpdate!.MessageTemplate = updatedMessageTemplate;
+            }
+
+            //Ensures related entities are included in the save operation
+            _context?.Update(recordToUpdate);
+
+            if (save != false)
+                await _context!.SaveChangesAsync();
 
             return new ModelResultModel() { IsSuccessful = true };
         }
@@ -72,19 +97,10 @@ namespace VehicleManagerAPI.Services
 
             foreach (var updatedMessage in updatedMessages)
             {
-                MessageModel? recordToUpdate = _context.Message!
-                    .FirstOrDefault(c => c.MessageID == updatedMessage.MessageID);
-                if (_context.Message == null)
-                {
-                    return new ModelResultModel() { IsSuccessful = false };
-                }
-                else if (recordToUpdate?.Vehicle?.SubmissionID != vehicleID)
-                {
-                    return new ModelResultModel() { IsSuccessful = false };
-                }
-                _context.Entry(recordToUpdate!).CurrentValues.SetValues(updatedMessage);
+                await Update(updatedMessage, false);
             }
 
+            //Save all changes at the end to avoid multiple save operations
             await _context.SaveChangesAsync();
 
             return new ModelResultModel() { IsSuccessful = true };

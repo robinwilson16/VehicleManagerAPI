@@ -39,16 +39,29 @@ namespace VehicleManagerAPI.Services
             return new ModelResultModel() { IsSuccessful = true };
         }
 
-        public async Task<ModelResultModel> Update(MessageTemplateModel? updatedMessageTemplate)
+        public async Task<ModelResultModel> Update(MessageTemplateModel? updatedMessageTemplate, bool? save)
         {
-            MessageTemplateModel? recordToUpdate = _context.MessageTemplate!
-                .FirstOrDefault(m => m.MessageTemplateID == updatedMessageTemplate!.MessageTemplateID);
+            //Include any related entities
+            MessageTemplateModel? recordToUpdate = await _context.MessageTemplate!
+                .FirstOrDefaultAsync(m => m.MessageTemplateID == updatedMessageTemplate!.MessageTemplateID);
 
-            if (_context.MessageTemplate == null)
+            if (recordToUpdate == null)
                 return new ModelResultModel() { IsSuccessful = false };
 
+            //Update IDs on related entities
+            //Need to get full related entity as only the ID is set in the updated record so causes the rest of the fields to be wiped out
+            //None
+
             _context.Entry(recordToUpdate!).CurrentValues.SetValues(updatedMessageTemplate!);
-            await _context.SaveChangesAsync();
+
+            //Update content of related entities
+            //None
+
+            //Ensures related entities are included in the save operation
+            _context?.Update(recordToUpdate);
+
+            if (save != false)
+                await _context!.SaveChangesAsync();
 
             return new ModelResultModel() { IsSuccessful = true };
         }
@@ -60,15 +73,10 @@ namespace VehicleManagerAPI.Services
 
             foreach (var updatedMessageTemplate in updatedMessageTemplates)
             {
-                MessageTemplateModel? recordToUpdate = _context.MessageTemplate!
-                    .FirstOrDefault(c => c.MessageTemplateID == updatedMessageTemplate.MessageTemplateID);
-                if (_context.MessageTemplate == null)
-                {
-                    return new ModelResultModel() { IsSuccessful = false };
-                }
-                _context.Entry(recordToUpdate!).CurrentValues.SetValues(updatedMessageTemplate);
+                await Update(updatedMessageTemplate, false);
             }
 
+            //Save all changes at the end to avoid multiple save operations
             await _context.SaveChangesAsync();
 
             return new ModelResultModel() { IsSuccessful = true };

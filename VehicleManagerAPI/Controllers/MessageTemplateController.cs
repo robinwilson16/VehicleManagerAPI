@@ -65,7 +65,7 @@ namespace VehicleManagerAPI.Controllers
             if (existingRecord is null)
                 return NotFound();
 
-            await _messageTemplateService.Update(updatedMessageTemplate);
+            await _messageTemplateService.Update(updatedMessageTemplate, true);
 
             return AcceptedAtAction(nameof(Update), new { }, updatedMessageTemplate);
         }

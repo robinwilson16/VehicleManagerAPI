@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VehicleManagerAPI.Data;
 
@@ -11,9 +12,11 @@ using VehicleManagerAPI.Data;
 namespace VehicleManagerAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241227185714_Add Vehicle ID to message model")]
+    partial class AddVehicleIDtomessagemodel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,7 +43,7 @@ namespace VehicleManagerAPI.Migrations
                     b.HasIndex("ConfigID")
                         .IsUnique();
 
-                    b.ToTable("Config", (string)null);
+                    b.ToTable("Config");
                 });
 
             modelBuilder.Entity("VehicleManagerAPI.Models.MessageModel", b =>
@@ -99,7 +102,7 @@ namespace VehicleManagerAPI.Migrations
                     b.Property<int?>("MessageTemplateID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("MessageTypeID")
+                    b.Property<int>("MessageTypeID")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("SentDate")
@@ -121,7 +124,7 @@ namespace VehicleManagerAPI.Migrations
 
                     b.HasIndex("MessageTemplateID");
 
-                    b.ToTable("Message", (string)null);
+                    b.ToTable("Message");
                 });
 
             modelBuilder.Entity("VehicleManagerAPI.Models.MessageTemplateModel", b =>
@@ -161,7 +164,7 @@ namespace VehicleManagerAPI.Migrations
 
                     b.HasKey("MessageTemplateID");
 
-                    b.ToTable("MessageTemplate", (string)null);
+                    b.ToTable("MessageTemplate");
                 });
 
             modelBuilder.Entity("VehicleManagerAPI.Models.NoteModel", b =>
@@ -192,21 +195,16 @@ namespace VehicleManagerAPI.Migrations
 
                     b.HasKey("NoteID");
 
-                    b.ToTable("Note", (string)null);
+                    b.ToTable("Note");
                 });
 
             modelBuilder.Entity("VehicleManagerAPI.Models.MessageModel", b =>
                 {
                     b.HasOne("VehicleManagerAPI.Models.MessageTemplateModel", "MessageTemplate")
-                        .WithMany("Messages")
+                        .WithMany()
                         .HasForeignKey("MessageTemplateID");
 
                     b.Navigation("MessageTemplate");
-                });
-
-            modelBuilder.Entity("VehicleManagerAPI.Models.MessageTemplateModel", b =>
-                {
-                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }

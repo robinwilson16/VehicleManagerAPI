@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VehicleManagerAPI.Data;
 
@@ -11,9 +12,11 @@ using VehicleManagerAPI.Data;
 namespace VehicleManagerAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241228021243_Remove virtual keyword from table relation")]
+    partial class Removevirtualkeywordfromtablerelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,7 +43,7 @@ namespace VehicleManagerAPI.Migrations
                     b.HasIndex("ConfigID")
                         .IsUnique();
 
-                    b.ToTable("Config", (string)null);
+                    b.ToTable("Config");
                 });
 
             modelBuilder.Entity("VehicleManagerAPI.Models.MessageModel", b =>
@@ -121,7 +124,7 @@ namespace VehicleManagerAPI.Migrations
 
                     b.HasIndex("MessageTemplateID");
 
-                    b.ToTable("Message", (string)null);
+                    b.ToTable("Message");
                 });
 
             modelBuilder.Entity("VehicleManagerAPI.Models.MessageTemplateModel", b =>
@@ -161,7 +164,7 @@ namespace VehicleManagerAPI.Migrations
 
                     b.HasKey("MessageTemplateID");
 
-                    b.ToTable("MessageTemplate", (string)null);
+                    b.ToTable("MessageTemplate");
                 });
 
             modelBuilder.Entity("VehicleManagerAPI.Models.NoteModel", b =>
@@ -192,7 +195,7 @@ namespace VehicleManagerAPI.Migrations
 
                     b.HasKey("NoteID");
 
-                    b.ToTable("Note", (string)null);
+                    b.ToTable("Note");
                 });
 
             modelBuilder.Entity("VehicleManagerAPI.Models.MessageModel", b =>

@@ -47,16 +47,29 @@ namespace VehicleManagerAPI.Services
             return new ModelResultModel() { IsSuccessful = true };
         }
 
-        public async Task<ModelResultModel> Update(NoteModel? updatedNote)
+        public async Task<ModelResultModel> Update(NoteModel? updatedNote, bool? save)
         {
+            //Include any related entities
             NoteModel? recordToUpdate = _context.Note!
                 .FirstOrDefault(m => m.NoteID == updatedNote!.NoteID);
 
-            if (_context.Note == null)
+            if (recordToUpdate == null)
                 return new ModelResultModel() { IsSuccessful = false };
 
+            //Update IDs on related entities
+            //Need to get full related entity as only the ID is set in the updated record so causes the rest of the fields to be wiped out
+            //None
+
             _context.Entry(recordToUpdate!).CurrentValues.SetValues(updatedNote!);
-            await _context.SaveChangesAsync();
+
+            //Update content of related entities
+            //None
+
+            //Ensures related entities are included in the save operation
+            _context?.Update(recordToUpdate);
+
+            if (save != false)
+                await _context!.SaveChangesAsync();
 
             return new ModelResultModel() { IsSuccessful = true };
         }
@@ -68,19 +81,10 @@ namespace VehicleManagerAPI.Services
 
             foreach (var updatedNote in updatedNotes)
             {
-                NoteModel? recordToUpdate = _context.Note!
-                    .FirstOrDefault(c => c.NoteID == updatedNote.NoteID);
-                if (_context.Note == null)
-                {
-                    return new ModelResultModel() { IsSuccessful = false };
-                }
-                else if (recordToUpdate?.Vehicle?.SubmissionID != vehicleID)
-                {
-                    return new ModelResultModel() { IsSuccessful = false };
-                }
-                _context.Entry(recordToUpdate!).CurrentValues.SetValues(updatedNote);
+                await Update(updatedNote, false);
             }
 
+            //Save all changes at the end to avoid multiple save operations
             await _context.SaveChangesAsync();
 
             return new ModelResultModel() { IsSuccessful = true };
