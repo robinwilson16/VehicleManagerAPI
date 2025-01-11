@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VehicleManagerAPI.Data;
 
@@ -11,9 +12,11 @@ using VehicleManagerAPI.Data;
 namespace VehicleManagerAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250109223347_Add TemplateSubject to MessageTemplate")]
+    partial class AddTemplateSubjecttoMessageTemplate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -93,9 +96,6 @@ namespace VehicleManagerAPI.Migrations
                     b.Property<bool?>("MessageIsHTML")
                         .HasColumnType("bit");
 
-                    b.Property<string>("MessageProcessed")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("MessageStatusID")
                         .HasColumnType("int");
 
@@ -109,9 +109,6 @@ namespace VehicleManagerAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Subject")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SubjectProcessed")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("To")

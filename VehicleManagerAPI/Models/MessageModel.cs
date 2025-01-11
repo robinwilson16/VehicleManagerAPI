@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VehicleManagerAPI.Models
@@ -6,12 +7,21 @@ namespace VehicleManagerAPI.Models
     public class MessageModel
     {
         [Key]
+        [DisplayName("ID")]
         public int MessageID { get; set; }
+
+        [DisplayName("Unique ID")]
         public Guid? MessageGUID { get; set; }
+
+        [DisplayName("Type")]
         public MessageType? MessageTypeID { get; set; }
+
+        [DisplayName("Template")]
         public MessageTemplateModel? MessageTemplate { get; set; }
         public string? Subject { get; set; }
+        public string? SubjectProcessed { get; set; }
         public string? Message { get; set; }
+        public string? MessageProcessed { get; set; }
         public bool? MessageIsHTML { get; set; }
         public int? VehicleID { get; set; }
         public virtual VehicleModel? Vehicle { get; set; }
