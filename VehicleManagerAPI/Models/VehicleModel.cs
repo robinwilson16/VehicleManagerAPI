@@ -25,11 +25,28 @@ namespace VehicleManagerAPI.Models
         public int? SubmissionCount { get; set; }
         public string? Surname { get; set; }
         public string? Forename { get; set; }
+
+        //[JsonIgnore]
+        //private string? _Name;
+
+        public string? Name
+        {
+            get { return Forename + " " + Surname; }
+            //set
+            //{
+            //    _Name = Forename + " " + Surname;
+            //}
+        }
+
         public string? Email { get; set; }
         public string? Tel { get; set; }
         public string? PostCode { get; set; }
         public string? Message { get; set; }
+
+        [Display(Name = "Reg Num")]
         public string? RegistrationNumber { get; set; }
+
+        [Display(Name = "Year")]
         public string? YearOfManufacture { get; set; }
         public string? Make { get; set; }
         public string? Model { get; set; }

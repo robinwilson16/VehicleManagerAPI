@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VehicleManagerAPI.Data;
 
@@ -11,9 +12,11 @@ using VehicleManagerAPI.Data;
 namespace VehicleManagerAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250116184353_Add IncludeAcceptRejectLinks Column to MessageTemplate")]
+    partial class AddIncludeAcceptRejectLinksColumntoMessageTemplate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -72,19 +75,16 @@ namespace VehicleManagerAPI.Migrations
                     b.Property<string>("FromName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("IncludeAcceptRejectLinks")
-                        .HasColumnType("bit");
-
                     b.Property<bool?>("IsAccepted")
                         .HasColumnType("bit");
 
                     b.Property<bool?>("IsSent")
                         .HasColumnType("bit");
 
-                    b.Property<string>("LastModifiedBy")
+                    b.Property<string>("LastUpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("LastModifiedDate")
+                    b.Property<DateTime?>("LastUpdatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Message")
@@ -156,10 +156,10 @@ namespace VehicleManagerAPI.Migrations
                     b.Property<bool?>("IsEnabled")
                         .HasColumnType("bit");
 
-                    b.Property<string>("LastModifiedBy")
+                    b.Property<string>("LastUpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("LastModifiedDate")
+                    b.Property<DateTime?>("LastUpdatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
@@ -202,10 +202,10 @@ namespace VehicleManagerAPI.Migrations
                     b.Property<bool?>("IsAlert")
                         .HasColumnType("bit");
 
-                    b.Property<string>("LastModifiedBy")
+                    b.Property<string>("LastUpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("LastModifiedDate")
+                    b.Property<DateTime?>("LastUpdatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("NoteText")

@@ -38,8 +38,25 @@ namespace VehicleManagerAPI.Services
             .Where(m => m.To == emailAddress || m.CC == emailAddress || m.BCC == emailAddress)
             .ToList();
 
+        public MessageModel? GetByGUID(Guid messageGUID) => Messages?.FirstOrDefault(c => c.MessageGUID == messageGUID);
+
         public async Task<ModelResultModel> Add(MessageModel newMessage)
         {
+            if (newMessage?.MessageTemplate != null)
+            {
+                var existingTemplate = await _context.MessageTemplate!
+                    .FirstOrDefaultAsync(t => t.MessageTemplateID == newMessage.MessageTemplate.MessageTemplateID);
+
+                if (existingTemplate != null)
+                {
+                    //Attach the existing MessageTemplate to the context instead of trying to insert a new one
+                    _context.Entry(existingTemplate).State = EntityState.Unchanged;
+
+                    //Attach the existing MessageTemplate to the model so it is returned by the API in full rather than just the ID
+                    newMessage.MessageTemplate = existingTemplate;
+                }
+            }
+
             _context.Message?.Add(newMessage);
             await _context.SaveChangesAsync();
 
@@ -48,13 +65,25 @@ namespace VehicleManagerAPI.Services
 
         public async Task<ModelResultModel> AddMany(List<MessageModel> newMessages)
         {
+            if (newMessages != null)
+            {
+                foreach (var newMessage in newMessages)
+                {
+                    if (newMessage.MessageTemplate != null)
+                    {
+                        // Attach the existing MessageTemplate to the context instead of trying to insert a new one
+                        _context.Entry(newMessage.MessageTemplate).State = EntityState.Unchanged;
+                    }
+                }
+            }
+            
             await _context.Message?.AddRangeAsync(newMessages)!;
             await _context.SaveChangesAsync();
 
             return new ModelResultModel() { IsSuccessful = true };
         }
 
-        public async Task<ModelResultModel> Update(MessageModel? updatedMessage, bool? save)
+        public async Task<ModelResultModel> Update(MessageModel updatedMessage, bool? save)
         {
             //Include any related entities
             MessageModel? recordToUpdate = await _context.Message!
@@ -64,22 +93,20 @@ namespace VehicleManagerAPI.Services
             if (recordToUpdate == null)
                 return new ModelResultModel() { IsSuccessful = false };
 
-            //Update IDs on related entities
-            //Need to get full related entity as only the ID is set in the updated record so causes the rest of the fields to be wiped out
-            MessageTemplateModel? updatedMessageTemplate = new MessageTemplateModel();
             if (updatedMessage?.MessageTemplate != null)
             {
-                updatedMessageTemplate = await _context.MessageTemplate!
-                .FirstOrDefaultAsync(t => t.MessageTemplateID == updatedMessage!.MessageTemplate.MessageTemplateID);
+                var existingTemplate = await _context.MessageTemplate!
+                    .FirstOrDefaultAsync(t => t.MessageTemplateID == updatedMessage.MessageTemplate.MessageTemplateID);
+
+                if (existingTemplate != null)
+                {
+                    // Attach the existing MessageTemplate to the context
+                    _context.Entry(existingTemplate).State = EntityState.Unchanged;
+                    recordToUpdate.MessageTemplate = existingTemplate;
+                }
             }
 
             _context.Entry(recordToUpdate!).CurrentValues.SetValues(updatedMessage!);
-
-            //Update content of related entities
-            if (updatedMessageTemplate?.MessageTemplateID != null)
-            {
-                recordToUpdate!.MessageTemplate = updatedMessageTemplate;
-            }
 
             //Ensures related entities are included in the save operation
             _context?.Update(recordToUpdate);
@@ -114,6 +141,26 @@ namespace VehicleManagerAPI.Services
 
             _context.Message!.Remove(recordToDelete);
             await _context.SaveChangesAsync();
+
+            // Check if the MessageTemplate is no longer referenced by any MessageModel
+            //var messageTemplateID = recordToDelete.MessageTemplate?.MessageTemplateID;
+            //if (messageTemplateID.HasValue)
+            //{
+            //    var isTemplateReferenced = await _context.Message!
+            //        .AnyAsync(m => m.MessageTemplate!.MessageTemplateID == messageTemplateID.Value);
+
+            //    if (!isTemplateReferenced)
+            //    {
+            //        var templateToDelete = await _context.MessageTemplate!
+            //            .FirstOrDefaultAsync(t => t.MessageTemplateID == messageTemplateID.Value);
+
+            //        if (templateToDelete != null)
+            //        {
+            //            _context.MessageTemplate!.Remove(templateToDelete);
+            //            await _context.SaveChangesAsync();
+            //        }
+            //    }
+            //}
 
             return new ModelResultModel() { IsSuccessful = true };
         }

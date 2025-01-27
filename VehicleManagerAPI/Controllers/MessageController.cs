@@ -65,6 +65,17 @@ namespace VehicleManagerAPI.Controllers
             return messages;
         }
 
+        [HttpGet("GUID/{messageGUID}")]
+        public ActionResult<MessageModel> GetByGUID(Guid messageGUID)
+        {
+            var message = _messageService.GetByGUID(messageGUID);
+
+            if (message == null)
+                return NotFound();
+
+            return message;
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create(MessageModel newMessage)
         {
