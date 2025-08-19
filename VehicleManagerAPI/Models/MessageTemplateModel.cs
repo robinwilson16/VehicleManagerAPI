@@ -16,7 +16,6 @@ namespace VehicleManagerAPI.Models
         public string? TemplateSubjectProcessed { get; set; }
         public string? TemplateContent { get; set; }
         public string? TemplateContentProcessed { get; set; }
-        public bool? IncludeAcceptRejectLinks { get; set; }
         public int? Sequence { get; set; }
         public bool? IsEnabled { get; set; }
         public string? CreatedBy { get; set; }
