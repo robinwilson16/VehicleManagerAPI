@@ -1,7 +1,6 @@
 ﻿using VehicleManagerAPI.Models;
 using VehicleManagerAPI.Services;
 using Microsoft.AspNetCore.Mvc;
-using static Azure.Core.HttpHeader;
 
 namespace VehicleManagerAPI.Controllers
 {
